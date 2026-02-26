@@ -1,0 +1,36 @@
+[build-system]
+requires = ["setuptools>=75.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "mlserve"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi[standard]>=0.133.1",
+    "numpy>=2.4.2",
+    "onnx>=1.20.1",
+    "onnxruntime>=1.24.2",
+    "onnxscript>=0.6.2",
+    "torch>=2.10.0",
+    "torchvision>=0.25.0",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.0",
+    "requests>=2.32.5",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+filterwarnings = [
+    "ignore::DeprecationWarning",
+    "ignore::FutureWarning",
+    "ignore::UserWarning",
+]
