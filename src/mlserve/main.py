@@ -9,7 +9,7 @@ from sqlalchemy import Engine
 from sqlmodel import Session, SQLModel, create_engine
 
 from mlserve.models.registered_model import RegisteredModel
-from mlserve.utils.convert import uploadfile_to_tensor
+from mlserve.utils.convert import uploadfile_to_ndarray
 
 app = FastAPI()
 models_path = Path(os.environ.get("MLSERVE_MODELS_PATH", "/models/mlserve/onnx/"))
@@ -60,11 +60,11 @@ async def infer_model(model_name: str, input: UploadFile):
     if not model_path.exists():
         raise HTTPException(status_code=404, detail=f"Model '{model_name}' does not exist.")
 
-    tensor = await uploadfile_to_tensor(input)
-    tensor = tensor.unsqueeze(dim=0)
+    array = await uploadfile_to_ndarray(input)
+    array = np.expand_dims(array, axis=0)
 
     session = get_session(model_path)
-    output = session.run(None, {"input": tensor.numpy()})
+    output = session.run(None, {"input": array})
 
     assert isinstance(output, list), "Expected inference output to be a list."
     assert isinstance(output[0], np.ndarray)

@@ -1,15 +1,13 @@
 import io
 
-import torch
+import numpy as np
 from fastapi import UploadFile
 from PIL import Image
-from torchvision.transforms import v2 as T
 
 
-async def uploadfile_to_tensor(file: UploadFile) -> torch.Tensor:
+async def uploadfile_to_ndarray(file: UploadFile) -> np.ndarray:
     content = await file.read()
     image = Image.open(io.BytesIO(content))
 
-    transform = T.ToTensor()
-
-    return transform(image)
+    # HWC -> CHW, normalize to [0, 1] float32
+    return np.array(image).transpose(2, 0, 1).astype(np.float32) / 255.0
