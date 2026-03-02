@@ -1,14 +1,14 @@
-import json
 from collections.abc import Generator
 from pathlib import Path
 
 import pytest
 from fastapi.testclient import TestClient
+
+from mlclient import MLClient
 from mlserver.config import configure
 from mlserver.main import app
 from mlserver.state import reset as reset_state
-
-from tests.utils.models import inmemory_model
+from tests.utils.models import tempfile_model
 
 
 @pytest.fixture()
@@ -20,12 +20,14 @@ def tmp_dirs(tmp_path: Path) -> tuple[Path, Path]:
 
 
 @pytest.fixture()
-def client(tmp_dirs: tuple[Path, Path]) -> Generator[TestClient]:
+def client(tmp_dirs: tuple[Path, Path]) -> Generator[MLClient]:
     models_dir, db_path = tmp_dirs
     configure(models_dir=models_dir, db_path=db_path)
     reset_state()
 
-    with TestClient(app) as c:
+    with TestClient(app) as transport:
+        c = MLClient()
+        c._client = transport
         yield c
 
     configure(models_dir=models_dir, db_path=db_path)
@@ -33,15 +35,9 @@ def client(tmp_dirs: tuple[Path, Path]) -> Generator[TestClient]:
 
 
 @pytest.fixture()
-def registered_model(client: TestClient) -> str:
-    """Register a tiny model and return its name."""
-    model_file = inmemory_model(3 * 4 * 4, 10, input_shape=(3, 4, 4))
+def registered_model(client: MLClient) -> str:
+    """Register a tiny model via the client and return its name."""
     name = "test_model"
-
-    resp = client.post(
-        "/register",
-        data={"data": json.dumps({"name": name})},
-        files={"model": (f"{name}.onnx", model_file, "application/octet-stream")},
-    )
-    assert resp.status_code == 200
+    model_path = tempfile_model(3 * 4 * 4, 10, input_shape=(3, 4, 4), name=name)
+    client.register_model(name, model_path)
     return name
