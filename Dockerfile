@@ -7,8 +7,13 @@ WORKDIR /app
 RUN --mount=type=cache,target=/root/.cache/uv \
     --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
     --mount=type=bind,source=uv.lock,target=uv.lock \
-    uv sync --frozen --no-dev --no-install-project
+    --mount=type=bind,source=packages/server/pyproject.toml,target=packages/server/pyproject.toml \
+    --mount=type=bind,source=packages/client/pyproject.toml,target=packages/client/pyproject.toml \
+    uv sync --frozen --no-dev --package mlserver --no-install-project
 
 COPY . .
 
-CMD ["uv", "run", "fastapi", "run", "src/mlserve/main.py", "--host", "0.0.0.0", "--port", "8000"]
+RUN --mount=type=cache,target=/root/.cache/uv \
+    uv sync --frozen --no-dev --package mlserver
+
+CMD ["uv", "run", "server"]

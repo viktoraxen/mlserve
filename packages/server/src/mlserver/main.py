@@ -8,8 +8,8 @@ from fastapi import FastAPI, Form, HTTPException, UploadFile
 from sqlalchemy import Engine
 from sqlmodel import Session, SQLModel, create_engine
 
-from mlserve.models.registered_model import RegisteredModel
-from mlserve.utils.convert import uploadfile_to_ndarray
+from mlserver.models.registered_model import RegisteredModel
+from mlserver.utils.convert import uploadfile_to_ndarray
 
 app = FastAPI()
 models_path = Path(os.environ.get("MLSERVE_MODELS_PATH", "/models/mlserve/onnx/"))

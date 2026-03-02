@@ -3,7 +3,7 @@ from pathlib import Path
 import pytest
 from fastapi.testclient import TestClient
 
-from mlserve.main import app, configure
+from mlserver.main import app, configure
 
 
 @pytest.fixture()

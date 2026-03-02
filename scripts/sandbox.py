@@ -11,7 +11,7 @@ from pathlib import Path
 
 import uvicorn
 
-from mlserve.main import app, configure
+from mlserver.main import app, configure
 
 tmp = tempfile.mkdtemp(prefix="mlserve_sandbox_")
 models_dir = Path(tmp) / "models"

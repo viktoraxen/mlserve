@@ -1,40 +1,29 @@
-[build-system]
-requires = ["setuptools>=75.0"]
-build-backend = "setuptools.build_meta"
-
 [project]
-name = "mlserve"
-version = "0.1.0"
-description = "Add your description here"
-readme = "README.md"
+name = "mlserve-workspace"
+version = "0.0.0"
+description = "Workspace root for mlserve monorepo"
 requires-python = ">=3.12"
-dependencies = [
-    "fastapi[standard]>=0.133.1",
-    "numpy>=2.4.2",
-    "onnx>=1.20.1",
-    "onnxruntime>=1.24.2",
-    "onnxscript>=0.6.2",
-    "pillow>=11.0",
-    "sqlmodel>=0.0.37",
-]
 
 [dependency-groups]
 dev = [
-    "httpx>=0.28",
+    "mlserver",
+    "mlclient",
     "pytest>=8.0",
     "torch>=2.10.0",
     "torchvision>=0.25.0",
 ]
 
-[tool.setuptools.packages.find]
-where = ["src"]
+[tool.uv.workspace]
+members = ["packages/*"]
 
 [tool.uv]
-required-environments = [ "sys_platform=='linux'" ]
+required-environments = ["sys_platform=='linux'"]
 
 [tool.uv.sources]
-torch = [ { index = "torch-cpu" } ]
-torchvision = [ { index = "torch-cpu" } ]
+mlserver = { workspace = true }
+mlclient = { workspace = true }
+torch = [{ index = "torch-cpu" }]
+torchvision = [{ index = "torch-cpu" }]
 
 [[tool.uv.index]]
 name = "torch-cpu"

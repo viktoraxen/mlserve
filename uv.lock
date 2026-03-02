@@ -13,6 +13,13 @@ required-markers = [
     "sys_platform == 'linux'",
 ]
 
+[manifest]
+members = [
+    "mlclient",
+    "mlserve-workspace",
+    "mlserver",
+]
+
 [[package]]
 name = "annotated-doc"
 version = "0.0.4"
@@ -517,9 +524,47 @@ wheels = [
 ]
 
 [[package]]
-name = "mlserve"
+name = "mlclient"
 version = "0.1.0"
-source = { editable = "." }
+source = { editable = "packages/client" }
+dependencies = [
+    { name = "httpx" },
+]
+
+[package.metadata]
+requires-dist = [{ name = "httpx", specifier = ">=0.28" }]
+
+[[package]]
+name = "mlserve-workspace"
+version = "0.0.0"
+source = { virtual = "." }
+
+[package.dev-dependencies]
+dev = [
+    { name = "mlclient" },
+    { name = "mlserver" },
+    { name = "pytest" },
+    { name = "torch", version = "2.10.0", source = { registry = "https://download.pytorch.org/whl/cpu" }, marker = "sys_platform == 'darwin'" },
+    { name = "torch", version = "2.10.0+cpu", source = { registry = "https://download.pytorch.org/whl/cpu" }, marker = "sys_platform != 'darwin'" },
+    { name = "torchvision", version = "0.25.0", source = { registry = "https://download.pytorch.org/whl/cpu" }, marker = "sys_platform == 'darwin'" },
+    { name = "torchvision", version = "0.25.0+cpu", source = { registry = "https://download.pytorch.org/whl/cpu" }, marker = "sys_platform != 'darwin'" },
+]
+
+[package.metadata]
+
+[package.metadata.requires-dev]
+dev = [
+    { name = "mlclient", editable = "packages/client" },
+    { name = "mlserver", editable = "packages/server" },
+    { name = "pytest", specifier = ">=8.0" },
+    { name = "torch", specifier = ">=2.10.0", index = "https://download.pytorch.org/whl/cpu" },
+    { name = "torchvision", specifier = ">=0.25.0", index = "https://download.pytorch.org/whl/cpu" },
+]
+
+[[package]]
+name = "mlserver"
+version = "0.1.0"
+source = { editable = "packages/server" }
 dependencies = [
     { name = "fastapi", extra = ["standard"] },
     { name = "numpy" },
@@ -528,16 +573,6 @@ dependencies = [
     { name = "onnxscript" },
     { name = "pillow" },
     { name = "sqlmodel" },
-]
-
-[package.dev-dependencies]
-dev = [
-    { name = "httpx" },
-    { name = "pytest" },
-    { name = "torch", version = "2.10.0", source = { registry = "https://download.pytorch.org/whl/cpu" }, marker = "sys_platform == 'darwin'" },
-    { name = "torch", version = "2.10.0+cpu", source = { registry = "https://download.pytorch.org/whl/cpu" }, marker = "sys_platform != 'darwin'" },
-    { name = "torchvision", version = "0.25.0", source = { registry = "https://download.pytorch.org/whl/cpu" }, marker = "sys_platform == 'darwin'" },
-    { name = "torchvision", version = "0.25.0+cpu", source = { registry = "https://download.pytorch.org/whl/cpu" }, marker = "sys_platform != 'darwin'" },
 ]
 
 [package.metadata]
@@ -549,14 +584,6 @@ requires-dist = [
     { name = "onnxscript", specifier = ">=0.6.2" },
     { name = "pillow", specifier = ">=11.0" },
     { name = "sqlmodel", specifier = ">=0.0.37" },
-]
-
-[package.metadata.requires-dev]
-dev = [
-    { name = "httpx", specifier = ">=0.28" },
-    { name = "pytest", specifier = ">=8.0" },
-    { name = "torch", specifier = ">=2.10.0", index = "https://download.pytorch.org/whl/cpu" },
-    { name = "torchvision", specifier = ">=0.25.0", index = "https://download.pytorch.org/whl/cpu" },
 ]
 
 [[package]]
