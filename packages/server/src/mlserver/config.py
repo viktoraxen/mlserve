@@ -1,7 +1,7 @@
 import os
 from pathlib import Path
 
-models_path = Path(os.environ.get("MLSERVE_MODELS_PATH", "/models"))
+models_path = Path(os.environ.get("MLSERVE_MODELS_PATH", "/models/onnx"))
 sqlite_url = "sqlite:///" + os.environ.get("MLSERVE_DB_PATH", "/models/database.db")
 
 

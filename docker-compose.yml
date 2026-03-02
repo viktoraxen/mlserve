@@ -1,6 +1,8 @@
 services:
   api:
     build: .
+    environment:
+      - TZ=Europe/Stockholm
     ports:
       - "8000:8000"
     volumes:

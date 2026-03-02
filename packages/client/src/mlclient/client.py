@@ -23,15 +23,19 @@ class MLClient:
         self,
         name: str,
         model_path: str | Path,
+        description: str | None = None,
     ) -> dict[str, Any]:
         import json
 
         path = Path(model_path)
+        metadata: dict[str, Any] = {"name": name}
+        if description is not None:
+            metadata["description"] = description
 
         with open(path, "rb") as f:
             response = self._client.post(
                 "/register",
-                data={"data": json.dumps({"name": name})},
+                data={"data": json.dumps(metadata)},
                 files={"model": (path.name, f, "application/octet-stream")},
             )
 
@@ -60,6 +64,7 @@ class MLClient:
         name: str,
         model: Any,
         input_shape: tuple[int, ...],
+        description: str | None = None,
     ) -> dict[str, Any]:
         import tempfile
 
@@ -80,9 +85,9 @@ class MLClient:
             assert program is not None, "Failed to export model!"
             program.save(f.name)
 
-            return self.register_model(name, f.name)
+            return self.register_model(name, f.name, description=description)
 
-    def list_models(self) -> list[str]:
+    def list_models(self) -> list[dict[str, Any]]:
         resp = self._client.get("/models")
         resp.raise_for_status()
         return resp.json()

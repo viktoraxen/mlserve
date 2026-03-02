@@ -8,8 +8,8 @@ router = APIRouter()
 
 
 @router.get("/models")
-async def get_models() -> list[str]:
+async def get_models() -> list[RegisteredModel]:
     with Session(get_engine()) as session:
-        models = session.exec(select(RegisteredModel.name)).all()
+        models = session.exec(select(RegisteredModel)).all()
 
     return list(models)
