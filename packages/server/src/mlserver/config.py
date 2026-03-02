@@ -1,8 +1,8 @@
 import os
 from pathlib import Path
 
-models_path = Path(os.environ.get("MLSERVE_MODELS_PATH", "/models/mlserve/onnx/"))
-sqlite_url = "sqlite:///" + os.environ.get("MLSERVE_DB_PATH", "/db/mlserve/database.db")
+models_path = Path(os.environ.get("MLSERVE_MODELS_PATH", "/models"))
+sqlite_url = "sqlite:///" + os.environ.get("MLSERVE_DB_PATH", "/models/database.db")
 
 
 def configure(*, models_dir: Path | None = None, db_path: Path | None = None) -> None:

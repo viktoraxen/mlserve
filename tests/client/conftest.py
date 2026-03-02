@@ -3,11 +3,11 @@ from pathlib import Path
 
 import pytest
 from fastapi.testclient import TestClient
-
 from mlclient import MLClient
 from mlserver.config import configure
 from mlserver.main import app
 from mlserver.state import reset as reset_state
+
 from tests.utils.models import tempfile_model
 
 
@@ -40,4 +40,5 @@ def registered_model(client: MLClient) -> str:
     name = "test_model"
     model_path = tempfile_model(3 * 4 * 4, 10, input_shape=(3, 4, 4), name=name)
     client.register_model(name, model_path)
+
     return name

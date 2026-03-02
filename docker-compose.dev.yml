@@ -3,4 +3,8 @@ services:
     volumes:
       - .:/app
       - /app/.venv
+      - models-dev:/models
     command: ["uv", "run", "fastapi", "dev", "packages/server/src/mlserver/main.py", "--host", "0.0.0.0", "--port", "8000"]
+
+volumes:
+  models-dev:

@@ -4,8 +4,8 @@ from fastapi import APIRouter, Form, HTTPException, UploadFile
 from sqlmodel import Session
 
 import mlserver.config as config
-from mlserver.state import get_engine
 from mlserver.models.registered_model import RegisteredModel
+from mlserver.state import get_engine
 
 router = APIRouter()
 
@@ -32,6 +32,7 @@ async def register_model(model: UploadFile, data: str = Form()):
         raise HTTPException(status_code=500, detail=f"Writing to database failed: {e}")
 
     try:
+        model_path.parent.mkdir(parents=True, exist_ok=True)
         with open(model_path, "wb") as f:
             f.write(model.file.read())
     except Exception as e:
