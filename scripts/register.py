@@ -11,9 +11,10 @@ def main():
 
     with mlclient.MLClient("http://localhost:8000") as client:
         client.register_pytorch_model(
-            "Multi-layer perceptron",
-            model,
-            (10,),
+            name="Multi-layer perceptron",
+            description="Simple two-layer mlp.",
+            model=model,
+            input_shape=(10,),
         )
 
 
