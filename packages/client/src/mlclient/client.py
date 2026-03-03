@@ -68,7 +68,17 @@ class MLClient:
     ) -> dict[str, Any]:
         import tempfile
 
-        import torch
+        try:
+            import torch
+        except ModuleNotFoundError:
+            raise ModuleNotFoundError(
+                "PyTorch is required for registering PyTorch models."
+            ) from None
+
+        if not isinstance(model, torch.nn.Module):
+            raise ValueError(
+                f"Expected `model` to be of type `torch.nn.Module`, was `{type(model).__name__}`"
+            )
 
         dummy_input = torch.randn(1, *input_shape)
 
