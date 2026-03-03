@@ -6,7 +6,7 @@ from sqlmodel import Session
 import mlserver.config as config
 from mlserver.models.registered_model import RegisteredModel
 from mlserver.state import get_sql_engine
-from mlserver.utils.onnx import count_parameters
+from mlserver.utils.onnx import get_model_info
 
 router = APIRouter()
 
@@ -21,12 +21,13 @@ async def register_model(model: UploadFile, data: str = Form()):
 
     try:
         model_path.parent.mkdir(parents=True, exist_ok=True)
+
         with open(model_path, "wb") as f:
             f.write(model.file.read())
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Writing model file failed: {e}")
 
-    num_parameters = count_parameters(model_path)
+    model_info = get_model_info(model_path)
 
     try:
         with Session(get_sql_engine()) as session:
@@ -35,7 +36,7 @@ async def register_model(model: UploadFile, data: str = Form()):
                     name=metadata["name"],
                     path=str(model_path),
                     description=metadata.get("description"),
-                    num_parameters=num_parameters,
+                    **model_info,
                 )
             )
 

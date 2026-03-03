@@ -11,6 +11,8 @@ class RegisteredModel(SQLModel, table=True):
     description: str | None = None
     created_at: datetime = Field(default_factory=datetime.now)
     num_parameters: int
+    input_shape: str
+    output_shape: str
 
     @field_serializer("created_at")
     def serialize_created_at(self, value: datetime) -> str:

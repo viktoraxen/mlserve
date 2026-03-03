@@ -1,6 +1,5 @@
+import numpy as np
 from mlclient import MLClient
-
-from tests.utils.data import tempfile_image
 
 
 def test_client_instantiates():
@@ -24,9 +23,9 @@ def test_client_register_model(registered_model: str):
 
 
 def test_client_infer(client: MLClient, registered_model: str):
-    image_path = tempfile_image()
+    image = np.random.rand(1, 3, 4, 4).astype(np.float32)
 
-    output = client.infer(registered_model, image_path)
+    output = client.infer(registered_model, image)
 
     assert isinstance(output, list)
     assert len(output) == 1  # batch of 1
