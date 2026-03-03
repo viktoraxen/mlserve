@@ -32,3 +32,18 @@ def test_infer_returns_valid_output(client, registered_model):
     assert isinstance(output, list)
     assert len(output) == 1  # batch of 1
     assert len(output[0]) == 10  # 10 output classes
+
+
+def test_infer_nonexistent_model_returns_404(client):
+    array = np.random.rand(1, 3, 4, 4).astype(np.float32)
+    buf = io.BytesIO()
+    np.save(buf, array)
+    buf.seek(0)
+
+    response = client.post(
+        "/infer",
+        params={"model_id": 999999},
+        files={"input": ("input", buf)},
+    )
+
+    assert response.status_code == 404

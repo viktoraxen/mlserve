@@ -14,7 +14,7 @@ router = APIRouter()
 @router.post("/register")
 async def register_model(model: UploadFile, data: str = Form()):
     if model.filename is None:
-        raise HTTPException(status_code=500, detail="Model filename is required!")
+        raise HTTPException(status_code=400, detail="Model filename is required!")
 
     metadata = json.loads(data)
     model_path = config.models_path / model.filename

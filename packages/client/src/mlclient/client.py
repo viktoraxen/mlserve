@@ -90,7 +90,7 @@ class MLClient:
 
             return self.register_onnx_model(name, f.name, description=description)
 
-    def delete_model(self, model_id: str) -> int | None:
+    def delete_model(self, model_id: int) -> int | None:
         response = self._client.post(
             "/delete",
             params={"model_id": model_id},
