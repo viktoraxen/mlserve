@@ -45,16 +45,31 @@ class MLClient:
     def infer(
         self,
         model_name: str,
-        input_path: str | Path,
+        input: Any,
     ) -> Any:
-        path = Path(input_path)
+        import io
 
-        with open(path, "rb") as f:
-            resp = self._client.post(
-                "/infer",
-                params={"model_name": model_name},
-                files={"input": (path.name, f)},
-            )
+        import numpy as np
+
+        if not isinstance(input, np.ndarray):
+            import torch
+
+            if isinstance(input, torch.Tensor):
+                input = input.numpy()
+            else:
+                raise TypeError(
+                    f"Expected numpy.ndarray or torch.Tensor, got {type(input).__name__}"
+                )
+
+        buf = io.BytesIO()
+        np.save(buf, input)
+        buf.seek(0)
+
+        resp = self._client.post(
+            "/infer",
+            params={"model_name": model_name},
+            files={"input": ("input.npy", buf, "application/octet-stream")},
+        )
 
         resp.raise_for_status()
         return resp.json()
