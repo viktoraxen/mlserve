@@ -32,9 +32,11 @@ def test_register_model_with_description(client: TestClient):
 def test_register_model_stores_metadata(client: TestClient, registered_model: int):
     models = client.get("/models").json()
     match = [m for m in models if m["id"] == registered_model]
+
     assert len(match) == 1
 
     model = match[0]
+
     assert model["num_parameters"] > 0
     assert len(parse_shape(model["input_shape"])) > 0
     assert len(parse_shape(model["output_shape"])) > 0
