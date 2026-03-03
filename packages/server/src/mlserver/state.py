@@ -1,5 +1,6 @@
-import onnxruntime as ort
 from pathlib import Path
+
+import onnxruntime as ort
 from sqlalchemy import Engine
 from sqlmodel import SQLModel, create_engine
 
@@ -15,7 +16,7 @@ def reset() -> None:
     _sessions = {}
 
 
-def get_session(model_path: Path) -> ort.InferenceSession:
+def get_onnx_session(model_path: Path) -> ort.InferenceSession:
     key = str(model_path)
 
     if key not in _sessions:
@@ -24,7 +25,7 @@ def get_session(model_path: Path) -> ort.InferenceSession:
     return _sessions[key]
 
 
-def get_engine() -> Engine:
+def get_sql_engine() -> Engine:
     global _engine
 
     if _engine is not None:

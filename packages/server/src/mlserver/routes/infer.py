@@ -2,7 +2,7 @@ import numpy as np
 from fastapi import APIRouter, HTTPException, UploadFile
 
 import mlserver.config as config
-from mlserver.state import get_session
+from mlserver.state import get_onnx_session
 from mlserver.utils.convert import uploadfile_to_ndarray
 
 router = APIRouter()
@@ -10,6 +10,7 @@ router = APIRouter()
 
 @router.post("/infer")
 async def infer_model(model_name: str, input: UploadFile):
+
     model_path = config.models_path / f"{model_name}.onnx"
 
     if not model_path.exists():
@@ -18,7 +19,7 @@ async def infer_model(model_name: str, input: UploadFile):
     array = await uploadfile_to_ndarray(input)
     array = np.expand_dims(array, axis=0)
 
-    session = get_session(model_path)
+    session = get_onnx_session(model_path)
     output = session.run(None, {"input": array})
 
     assert isinstance(output, list), "Expected inference output to be a list."

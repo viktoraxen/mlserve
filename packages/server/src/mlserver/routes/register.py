@@ -5,7 +5,7 @@ from sqlmodel import Session
 
 import mlserver.config as config
 from mlserver.models.registered_model import RegisteredModel
-from mlserver.state import get_engine
+from mlserver.state import get_sql_engine
 from mlserver.utils.onnx import count_parameters
 
 router = APIRouter()
@@ -29,7 +29,7 @@ async def register_model(model: UploadFile, data: str = Form()):
     num_parameters = count_parameters(model_path)
 
     try:
-        with Session(get_engine()) as session:
+        with Session(get_sql_engine()) as session:
             session.add(
                 RegisteredModel(
                     name=metadata["name"],
