@@ -16,7 +16,7 @@ def reset() -> None:
     _sessions = {}
 
 
-def get_onnx_session(model_path: Path) -> ort.InferenceSession:
+def get_onnx_session(model_path: str | Path) -> ort.InferenceSession:
     key = str(model_path)
 
     if key not in _sessions:
