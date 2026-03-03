@@ -16,4 +16,4 @@ COPY . .
 RUN --mount=type=cache,target=/root/.cache/uv \
     uv sync --frozen --no-dev --package mlserver
 
-CMD ["uv", "run", "server"]
+CMD ["uv", "run", "--no-sync", "server"]
