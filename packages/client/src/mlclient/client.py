@@ -42,11 +42,20 @@ class MLClient:
         response.raise_for_status()
         return response.json()
 
+    def delete_model(self, model_id: str) -> dict[str, Any]:
+        response = self._client.post(
+            "/delete",
+            params={"model_id": model_id},
+        )
+
+        response.raise_for_status()
+        return response.json()
+
     def infer(
         self,
-        model_name: str,
+        model_id: str,
         input: Any,
-    ) -> Any:
+    ) -> dict[str, Any]:
         import io
 
         import numpy as np
@@ -67,7 +76,7 @@ class MLClient:
 
         resp = self._client.post(
             "/infer",
-            params={"model_name": model_name},
+            params={"model_id": model_id},
             files={"input": ("input.npy", buf, "application/octet-stream")},
         )
 
