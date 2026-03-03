@@ -4,6 +4,7 @@ from pathlib import Path
 from typing import Any
 
 import httpx
+import numpy as np
 
 
 class MLClient:
@@ -19,12 +20,12 @@ class MLClient:
     def close(self) -> None:
         self._client.close()
 
-    def register_model(
+    def register_onnx_model(
         self,
         name: str,
         model_path: str | Path,
         description: str | None = None,
-    ) -> dict[str, Any]:
+    ) -> int | None:
         import json
 
         path = Path(model_path)
@@ -40,22 +41,69 @@ class MLClient:
             )
 
         response.raise_for_status()
-        return response.json()
 
-    def delete_model(self, model_id: str) -> dict[str, Any]:
+        return response.json().get("id")
+
+    def register_pytorch_model(
+        self,
+        name: str,
+        model: Any,
+        input_shape: tuple[int, ...],
+        description: str | None = None,
+    ) -> int | None:
+        import contextlib
+        import io
+        import logging
+        import tempfile
+        import warnings
+
+        import torch
+
+        if not isinstance(model, torch.nn.Module):
+            raise ValueError(
+                f"Expected `model` to be of type `torch.nn.Module`, was `{type(model).__name__}`"
+            )
+
+        model.eval()
+        dummy_input = torch.randn(1, *input_shape)
+
+        with (
+            tempfile.NamedTemporaryFile(suffix=".onnx") as f,
+            warnings.catch_warnings(),
+            contextlib.redirect_stdout(io.StringIO()),
+            contextlib.redirect_stderr(io.StringIO()),
+        ):
+            warnings.simplefilter("ignore")
+            logging.disable(logging.CRITICAL)
+            program = torch.onnx.export(
+                model,
+                (dummy_input,),
+                None,
+                input_names=["input"],
+                output_names=["output"],
+                dynamic_axes={"input": {0: "batch"}, "output": {0: "batch"}},
+            )
+            logging.disable(logging.NOTSET)
+
+            assert program is not None, "Failed to export model!"
+            program.save(f.name)
+
+            return self.register_onnx_model(name, f.name, description=description)
+
+    def delete_model(self, model_id: str) -> int | None:
         response = self._client.post(
             "/delete",
             params={"model_id": model_id},
         )
 
         response.raise_for_status()
-        return response.json()
+        return response.json().get("id")
 
     def infer(
         self,
-        model_id: str,
+        model_id: int,
         input: Any,
-    ) -> dict[str, Any]:
+    ) -> np.ndarray:
         import io
 
         import numpy as np
@@ -77,51 +125,18 @@ class MLClient:
         resp = self._client.post(
             "/infer",
             params={"model_id": model_id},
-            files={"input": ("input.npy", buf, "application/octet-stream")},
+            files={"input": ("input", buf)},
         )
 
         resp.raise_for_status()
-        return resp.json()
+        result = resp.json()
 
-    def register_pytorch_model(
-        self,
-        name: str,
-        model: Any,
-        input_shape: tuple[int, ...],
-        description: str | None = None,
-    ) -> dict[str, Any]:
-        import tempfile
+        assert isinstance(result, list), "Expected inference result to be list."
 
-        try:
-            import torch
-        except ModuleNotFoundError:
-            raise ModuleNotFoundError(
-                "PyTorch is required for registering PyTorch models."
-            ) from None
-
-        if not isinstance(model, torch.nn.Module):
-            raise ValueError(
-                f"Expected `model` to be of type `torch.nn.Module`, was `{type(model).__name__}`"
-            )
-
-        dummy_input = torch.randn(1, *input_shape)
-
-        with tempfile.NamedTemporaryFile(suffix=".onnx") as f:
-            program = torch.onnx.export(
-                model,
-                (dummy_input,),
-                None,
-                input_names=["input"],
-                output_names=["output"],
-                dynamic_axes={"input": {0: "batch"}, "output": {0: "batch"}},
-            )
-
-            assert program is not None, "Failed to export model!"
-            program.save(f.name)
-
-            return self.register_model(name, f.name, description=description)
+        return np.array(result)
 
     def list_models(self) -> list[dict[str, Any]]:
         resp = self._client.get("/models")
+
         resp.raise_for_status()
         return resp.json()

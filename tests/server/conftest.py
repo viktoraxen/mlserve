@@ -33,8 +33,8 @@ def client(tmp_dirs: tuple[Path, Path]) -> Generator[TestClient]:
 
 
 @pytest.fixture()
-def registered_model(client: TestClient) -> str:
-    """Register a tiny model and return its name."""
+def registered_model(client: TestClient) -> int:
+    """Register a tiny model and return its id."""
     model_file = inmemory_model(3 * 4 * 4, 10, input_shape=(3, 4, 4))
     name = "test_model"
 
@@ -44,4 +44,4 @@ def registered_model(client: TestClient) -> str:
         files={"model": (f"{name}.onnx", model_file, "application/octet-stream")},
     )
     assert resp.status_code == 200
-    return name
+    return resp.json()["id"]

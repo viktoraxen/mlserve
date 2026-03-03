@@ -7,4 +7,5 @@ from fastapi import UploadFile
 async def uploadfile_to_ndarray(file: UploadFile) -> np.ndarray:
     content = await file.read()
 
-    return np.load(io.BytesIO(content))
+    array = np.load(io.BytesIO(content))
+    return array.astype(np.float32, copy=False)

@@ -35,10 +35,8 @@ def client(tmp_dirs: tuple[Path, Path]) -> Generator[MLClient]:
 
 
 @pytest.fixture()
-def registered_model(client: MLClient) -> str:
-    """Register a tiny model via the client and return its name."""
+def registered_model(client: MLClient) -> int:
+    """Register a tiny model via the client and return its id."""
     name = "test_model"
     model_path = tempfile_model(3 * 4 * 4, 10, input_shape=(3, 4, 4), name=name)
-    client.register_model(name, model_path)
-
-    return name
+    return client.register_onnx_model(name, model_path)

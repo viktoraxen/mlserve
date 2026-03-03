@@ -10,7 +10,7 @@ router = APIRouter()
 
 
 @router.post("/infer")
-async def infer_model(model_id: str, input: UploadFile):
+async def infer_model(model_id: int, input: UploadFile):
     try:
         with Session(get_sql_engine()) as session:
             result = session.exec(

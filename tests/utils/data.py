@@ -23,3 +23,8 @@ def tempfile_image() -> Path:
     _create_image().save(f, format="PNG")
     f.close()
     return Path(f.name)
+
+
+def parse_shape(shape_str: str) -> tuple:
+    """Parse a shape string into a tuple."""
+    return tuple([int(size) for size in shape_str[1:-1].split(",")])

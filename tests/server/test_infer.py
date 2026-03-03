@@ -1,4 +1,6 @@
-from tests.utils.data import inmemory_image
+import io
+
+import numpy as np
 
 
 def test_models_endpoint_returns_list(client):
@@ -12,12 +14,15 @@ def test_models_endpoint_returns_list(client):
 
 
 def test_infer_returns_valid_output(client, registered_model):
-    image = inmemory_image()
+    array = np.random.rand(1, 3, 4, 4).astype(np.float32)
+    buf = io.BytesIO()
+    np.save(buf, array)
+    buf.seek(0)
 
     response = client.post(
         "/infer",
-        params={"model_name": registered_model},
-        files={"input": ("test.png", image, "image/png")},
+        params={"model_id": registered_model},
+        files={"input": ("input", buf)},
     )
 
     assert response.status_code == 200
