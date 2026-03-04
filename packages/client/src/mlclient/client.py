@@ -6,6 +6,8 @@ from typing import Any
 import httpx
 import numpy as np
 
+from mlclient.picker import pick
+
 
 class MLClient:
     def __init__(self, base_url: str = "http://localhost:8000"):
@@ -102,8 +104,8 @@ class MLClient:
 
     def infer(
         self,
-        model_id: int,
         input: Any,
+        model_id: int | None = None,
     ) -> np.ndarray:
         import io
 
@@ -123,6 +125,9 @@ class MLClient:
         np.save(buf, input)
         buf.seek(0)
 
+        if model_id is None:
+            model_id = self._pick_model()
+
         resp = self._client.post(
             "/infer",
             params={"model_id": model_id},
@@ -141,3 +146,7 @@ class MLClient:
 
         resp.raise_for_status()
         return resp.json()
+
+    def _pick_model(self) -> int:
+        models = self.list_models()
+        return pick(models)
