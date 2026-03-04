@@ -529,10 +529,14 @@ version = "0.1.0"
 source = { editable = "packages/client" }
 dependencies = [
     { name = "httpx" },
+    { name = "onnxscript" },
 ]
 
 [package.metadata]
-requires-dist = [{ name = "httpx", specifier = ">=0.28" }]
+requires-dist = [
+    { name = "httpx", specifier = ">=0.28" },
+    { name = "onnxscript", specifier = ">=0.6.2" },
+]
 
 [[package]]
 name = "mlserve-workspace"

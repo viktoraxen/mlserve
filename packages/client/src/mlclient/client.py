@@ -30,6 +30,7 @@ class MLClient:
 
         path = Path(model_path)
         metadata: dict[str, Any] = {"name": name}
+
         if description is not None:
             metadata["description"] = description
 
