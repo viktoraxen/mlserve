@@ -1,12 +1,14 @@
 from InquirerPy import inquirer
 
+from mlclient.model import Model
 
-def pick(models: list[dict]) -> dict:
+
+def pick(models: list[Model]) -> Model:
     columns = ["name", "created_at", "description"]
     entry_lists = [[] for _ in models]
 
     for column in columns:
-        values = [m[column] for m in models]
+        values = [str(getattr(m, column)) for m in models]
         width = max([len(e) for e in values])
 
         for i in range(len(entry_lists)):

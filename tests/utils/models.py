@@ -12,13 +12,16 @@ def mlp(
     flatten: bool = False,
 ) -> nn.Module:
     layers: list[nn.Module] = []
+
     if flatten:
         layers.append(nn.Flatten())
+
     layers += [
         nn.Linear(in_channels, 5),
         nn.ReLU(),
         nn.Linear(5, out_channels),
     ]
+
     return nn.Sequential(*layers)
 
 
@@ -45,10 +48,12 @@ def _export_onnx(
             output_names=["output"],
             dynamic_axes={"input": {0: "batch"}, "output": {0: "batch"}},
         )
-        assert program is not None, "Failed to export model!"
-        program.save(f.name)
 
+        assert program is not None, "Failed to export model!"
+
+        program.save(f.name)
         f.seek(0)
+
         return f.read()
 
 

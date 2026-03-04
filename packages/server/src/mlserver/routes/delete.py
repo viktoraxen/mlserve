@@ -29,7 +29,4 @@ async def delete_model(model_id: int):
             status_code=500, detail=f"Deleting model with id '{model_id}' failed with exception {e}"
         )
 
-    return {
-        "message": f"Model '{model_id}' deleted successfully.",
-        "id": model_id,
-    }
+    return existing

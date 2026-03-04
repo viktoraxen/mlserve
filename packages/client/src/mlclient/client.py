@@ -6,6 +6,7 @@ from typing import Any
 import httpx
 import numpy as np
 
+from mlclient.model import Model
 from mlclient.picker import pick
 
 
@@ -93,9 +94,9 @@ class MLClient:
 
             return self.register_onnx_model(name, f.name, description=description)
 
-    def delete_model(self, model_id: int | None = None) -> int:
+    def delete_model(self, model_id: int | None = None) -> Model:
         if model_id is None:
-            model_id = self.pick_model().get("id")
+            model_id = self.pick_model().id
 
         response = self._client.post(
             "/delete",
@@ -103,7 +104,7 @@ class MLClient:
         )
 
         response.raise_for_status()
-        return response.json().get("id")
+        return Model.from_dict(response.json())
 
     def infer(
         self,
@@ -129,7 +130,7 @@ class MLClient:
         buf.seek(0)
 
         if model_id is None:
-            model_id = self.pick_model().get("id")
+            model_id = self.pick_model().id
 
         resp = self._client.post(
             "/infer",
@@ -144,12 +145,19 @@ class MLClient:
 
         return np.array(result)
 
-    def list_models(self) -> list[dict[str, Any]]:
-        resp = self._client.get("/models")
+    def models(self) -> list[Model]:
+        response = self._client.get("/models")
 
-        resp.raise_for_status()
-        return resp.json()
+        response.raise_for_status()
+        response = response.json()
 
-    def pick_model(self) -> dict:
-        models = self.list_models()
+        assert isinstance(response, list), "Expected models response to be list!"
+
+        if response:
+            assert isinstance(response[0], dict), "Expected models response to contain dicts!"
+
+        return [Model.from_dict(d) for d in response]
+
+    def pick_model(self) -> Model:
+        models = self.models()
         return pick(models)

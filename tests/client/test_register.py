@@ -26,7 +26,8 @@ def test_client_register_onnx_model_with_description(client: MLClient):
 
     assert isinstance(model_id, int)
 
-    models = client.list_models()
-    match = [m for m in models if m["id"] == model_id]
+    models = client.models()
+    match = [m for m in models if m.id == model_id]
+
     assert len(match) == 1
-    assert match[0]["description"] == "A described model"
+    assert match[0].description == "A described model"

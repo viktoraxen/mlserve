@@ -12,6 +12,6 @@ def test_client_context_manager():
         assert client is not None
 
 
-def test_client_list_models(client: MLClient):
-    models = client.list_models()
+def test_client_models(client: MLClient):
+    models = client.models()
     assert isinstance(models, list)

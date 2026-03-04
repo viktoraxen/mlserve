@@ -1,6 +1,5 @@
 import httpx
 import mlclient
-import numpy as np
 import typer
 
 
@@ -13,15 +12,7 @@ def main(
 
     try:
         with mlclient.MLClient(url) as client:
-            model = client.pick_model()
-
-            input = np.random.rand(*model.input_shape)
-            input = np.expand_dims(input, axis=0)
-
-            result = client.infer(input, model.id)
-
-            print(result.shape)
-            print(result)
+            print(client.pick_model())
     except httpx.HTTPError:
         print(f"Could not connect to server on URL {url}")
         raise typer.Exit(1)
