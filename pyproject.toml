@@ -3,6 +3,9 @@ name = "mlserve-workspace"
 version = "0.0.0"
 description = "Workspace root for mlserve monorepo"
 requires-python = ">=3.12"
+dependencies = [
+    "typer>=0.24.1",
+]
 
 [dependency-groups]
 dev = [

@@ -25,7 +25,7 @@ class MLClient:
         name: str,
         model_path: str | Path,
         description: str | None = None,
-    ) -> int | None:
+    ) -> int:
         import json
 
         path = Path(model_path)
@@ -50,7 +50,7 @@ class MLClient:
         model: Any,
         input_shape: tuple[int, ...],
         description: str | None = None,
-    ) -> int | None:
+    ) -> int:
         import contextlib
         import io
         import logging
@@ -90,7 +90,7 @@ class MLClient:
 
             return self.register_onnx_model(name, f.name, description=description)
 
-    def delete_model(self, model_id: int) -> int | None:
+    def delete_model(self, model_id: int) -> int:
         response = self._client.post(
             "/delete",
             params={"model_id": model_id},
