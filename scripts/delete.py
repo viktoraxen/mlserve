@@ -12,10 +12,7 @@ def main(
 
     try:
         with mlclient.MLClient(url) as client:
-            models = client.list_models()
-
-            for m in models:
-                client.delete_model(m.get("id", 0))
+            client.delete_model()
     except httpx.HTTPError:
         print(f"Could not connect to server on URL {url}")
         raise typer.Exit(1)

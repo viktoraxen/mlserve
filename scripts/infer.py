@@ -13,20 +13,14 @@ def main(
 
     try:
         with mlclient.MLClient(url) as client:
-            models = client.list_models()
-
-            if not models:
-                print(f"No registered models on {url}")
-                raise typer.Exit(0)
-
-            model = models[0]
-            input_shape = model.get("input_shape", "")
+            model = client.pick_model()
+            input_shape = model.get("input_shape")
 
             shape = tuple([int(size) for size in input_shape[1:-1].split(",")])
             input = np.random.rand(*shape)
             input = np.expand_dims(input, axis=0)
 
-            result = client.infer(model.get("id", 0), input)
+            result = client.infer(input, model.get("id"))
 
             print(result.shape)
             print(result)

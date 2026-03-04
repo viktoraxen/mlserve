@@ -93,7 +93,10 @@ class MLClient:
 
             return self.register_onnx_model(name, f.name, description=description)
 
-    def delete_model(self, model_id: int) -> int:
+    def delete_model(self, model_id: int | None = None) -> int:
+        if model_id is None:
+            model_id = self.pick_model().get("id")
+
         response = self._client.post(
             "/delete",
             params={"model_id": model_id},
@@ -126,7 +129,7 @@ class MLClient:
         buf.seek(0)
 
         if model_id is None:
-            model_id = self._pick_model()
+            model_id = self.pick_model().get("id")
 
         resp = self._client.post(
             "/infer",
@@ -147,6 +150,6 @@ class MLClient:
         resp.raise_for_status()
         return resp.json()
 
-    def _pick_model(self) -> int:
+    def pick_model(self) -> dict:
         models = self.list_models()
         return pick(models)

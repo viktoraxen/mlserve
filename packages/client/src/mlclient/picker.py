@@ -1,7 +1,7 @@
 from InquirerPy import inquirer
 
 
-def pick(models: list[dict]) -> int:
+def pick(models: list[dict]) -> dict:
     columns = ["name", "created_at", "description"]
     entry_lists = [[] for _ in models]
 
@@ -17,8 +17,7 @@ def pick(models: list[dict]) -> int:
     for entry_list in entry_lists:
         entries.append(" | ".join(entry_list))
 
-    ids = [m["id"] for m in models]
-    options = [{"name": e, "value": id} for e, id in zip(entries, ids)]
+    options = [{"name": e, "value": m} for e, m in zip(entries, models)]
 
     return inquirer.fuzzy(  # type: ignore[privateImportUsage]
         message="Select a model:",
