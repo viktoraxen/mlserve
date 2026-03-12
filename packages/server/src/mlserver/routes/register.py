@@ -4,6 +4,7 @@ from fastapi import APIRouter, Form, HTTPException, UploadFile
 from sqlmodel import Session
 
 import mlserver.config as config
+from mlserver.logger import logger
 from mlserver.models.registered_model import RegisteredModel
 from mlserver.state import get_sql_engine
 from mlserver.utils.onnx import get_model_info
@@ -13,10 +14,16 @@ router = APIRouter()
 
 @router.post("/register")
 async def register_model(model: UploadFile, data: str = Form()):
+    metadata = json.loads(data)
+    model_name = metadata.get("name")
+
+    logger.info(f"Registering model '{model_name}'")
+
     if model.filename is None:
+        logger.error(f"Model '{model_name}' did not provide filename.")
+
         raise HTTPException(status_code=400, detail="Model filename is required!")
 
-    metadata = json.loads(data)
     model_path = config.models_path / model.filename
 
     try:
@@ -25,11 +32,15 @@ async def register_model(model: UploadFile, data: str = Form()):
         with open(model_path, "wb") as f:
             f.write(model.file.read())
     except Exception as e:
+        logger.error(f"Model '{model_name}' could not be written to path '{model_path}'!")
+
         raise HTTPException(status_code=500, detail=f"Writing model file failed: {e}")
 
     try:
         model_info = get_model_info(model_path)
     except Exception as e:
+        logger.error(f"Model '{model_name}' provided invalid ONNX model!")
+
         model_path.unlink(missing_ok=True)
         raise HTTPException(status_code=400, detail=f"Invalid ONNX model: {e}")
 
@@ -45,6 +56,9 @@ async def register_model(model: UploadFile, data: str = Form()):
             session.commit()
             session.refresh(registered_model)
     except Exception as e:
+        logger.error(f"Model '{model_name}' could not be written to database!")
+
+        model_path.unlink(missing_ok=True)
         raise HTTPException(status_code=500, detail=f"Writing to database failed: {e}")
 
     return registered_model

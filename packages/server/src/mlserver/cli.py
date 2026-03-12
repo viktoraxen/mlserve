@@ -2,7 +2,12 @@ import uvicorn
 
 
 def main():
-    uvicorn.run("mlserver.main:app", host="0.0.0.0", port=8000)
+    uvicorn.run(
+        "mlserver.main:app",
+        host="0.0.0.0",
+        port=8000,
+        log_level="warning",
+    )
 
 
 if __name__ == "__main__":

@@ -14,6 +14,7 @@ dependencies = [
     "onnxruntime>=1.24.2",
     "onnxscript>=0.6.2",
     "pillow>=11.0",
+    "rich>=14.3.3",
     "sqlmodel>=0.0.37",
 ]
 
