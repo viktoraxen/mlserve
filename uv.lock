@@ -560,6 +560,7 @@ name = "mlserve-workspace"
 version = "0.0.0"
 source = { virtual = "." }
 dependencies = [
+    { name = "rich" },
     { name = "typer" },
 ]
 
@@ -575,7 +576,10 @@ dev = [
 ]
 
 [package.metadata]
-requires-dist = [{ name = "typer", specifier = ">=0.24.1" }]
+requires-dist = [
+    { name = "rich", specifier = ">=14.3.3" },
+    { name = "typer", specifier = ">=0.24.1" },
+]
 
 [package.metadata.requires-dev]
 dev = [

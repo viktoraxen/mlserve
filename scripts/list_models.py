@@ -1,8 +1,7 @@
-import json
-
 import httpx
 import mlclient
 import typer
+from rich.pretty import pprint
 
 
 def main(
@@ -14,8 +13,9 @@ def main(
 
     try:
         with mlclient.MLClient(url) as client:
-            models = client.list_models()
-            print(json.dumps(models, indent=2))
+            models = client.models()
+            pprint(models)
+
     except httpx.HTTPError:
         print(f"Could not connect to server on URL {url}")
         raise typer.Exit(1)

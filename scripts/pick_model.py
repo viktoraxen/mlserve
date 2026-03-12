@@ -1,6 +1,7 @@
 import httpx
 import mlclient
 import typer
+from rich.pretty import pprint
 
 
 def main(
@@ -12,7 +13,7 @@ def main(
 
     try:
         with mlclient.MLClient(url) as client:
-            print(client.pick_model())
+            pprint(client.pick_model())
     except httpx.HTTPError:
         print(f"Could not connect to server on URL {url}")
         raise typer.Exit(1)

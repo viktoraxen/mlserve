@@ -1,6 +1,7 @@
 import httpx
 import mlclient
 import typer
+from rich.pretty import pprint
 from torch import nn
 
 
@@ -18,12 +19,14 @@ def main(
 
     try:
         with mlclient.MLClient(url) as client:
-            client.register_pytorch_model(
+            model = client.register_pytorch_model(
                 name="Multi-layer perceptron",
                 description="Simple two-layer mlp.",
                 model=model,
                 input_shape=(10,),
             )
+
+            pprint(model)
     except httpx.HTTPError:
         print(f"Could not connect to server on URL {url}")
         raise typer.Exit(1)

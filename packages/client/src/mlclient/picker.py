@@ -3,7 +3,10 @@ from InquirerPy import inquirer
 from mlclient.model import Model
 
 
-def pick(models: list[Model]) -> Model:
+def pick(models: list[Model]) -> Model | None:
+    if not models:
+        return None
+
     columns = ["name", "created_at", "description"]
     entry_lists = [[] for _ in models]
 

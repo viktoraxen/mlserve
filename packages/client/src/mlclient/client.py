@@ -96,10 +96,7 @@ class MLClient:
 
             return self.register_onnx_model(name, f.name, description=description)
 
-    def delete_model(self, model_id: int | None = None) -> Model:
-        if model_id is None:
-            model_id = self.pick_model().id
-
+    def delete_model(self, model_id: int) -> Model:
         response = self._client.post(
             "/delete",
             params={"model_id": model_id},
@@ -111,7 +108,7 @@ class MLClient:
     def infer(
         self,
         input: Any,
-        model_id: int | None = None,
+        model_id: int,
     ) -> np.ndarray:
         import io
 
@@ -130,9 +127,6 @@ class MLClient:
         buf = io.BytesIO()
         np.save(buf, input)
         buf.seek(0)
-
-        if model_id is None:
-            model_id = self.pick_model().id
 
         resp = self._client.post(
             "/infer",
@@ -160,6 +154,6 @@ class MLClient:
 
         return [Model.from_dict(d) for d in response]
 
-    def pick_model(self) -> Model:
+    def pick_model(self) -> Model | None:
         models = self.models()
         return pick(models)
