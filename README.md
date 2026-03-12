@@ -34,10 +34,10 @@ When running outside of Docker, set these environment variables to control where
 
 | Variable | Default | Description |
 |---|---|---|
-| `MLSERVE_MODELS_PATH` | `/models/onnx` | Directory for ONNX model files |
-| `MLSERVE_DB_PATH` | `/models/database.db` | SQLite database file path |
+| `MLSERVE_MODELS_PATH` | `~/.mlserve/models` | Directory for ONNX model files |
+| `MLSERVE_DB_PATH` | `~/.mlserve/database.db` | SQLite database file path |
 
-The defaults assume a Docker volume at `/models`. For local use you likely want to override both:
+The defaults store everything under `~/.mlserve/`. The Docker image overrides these to `/models/onnx` and `/models/database.db`. To use a custom location:
 
 ```bash
 MLSERVE_MODELS_PATH=./data/onnx MLSERVE_DB_PATH=./data/database.db uv run server

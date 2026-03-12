@@ -16,4 +16,7 @@ COPY . .
 RUN --mount=type=cache,target=/root/.cache/uv \
     uv sync --frozen --no-dev --package mlserver
 
+ENV MLSERVE_MODELS_PATH=/models/onnx
+ENV MLSERVE_DB_PATH=/models/database.db
+
 CMD ["uv", "run", "--no-sync", "server"]
