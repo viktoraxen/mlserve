@@ -28,8 +28,6 @@ uv run server
 
 This starts the server on `0.0.0.0:8000`. The server stores ONNX model files and a SQLite database on disk.
 
-<!-- Docker: make prod (or make dev for hot-reload). See docker-compose.yml / Makefile. -->
-
 ### Configuration
 
 When running outside of Docker, set these environment variables to control where data is stored:
@@ -45,7 +43,7 @@ The defaults assume a Docker volume at `/models`. For local use you likely want 
 MLSERVE_MODELS_PATH=./data/onnx MLSERVE_DB_PATH=./data/database.db uv run server
 ```
 
-The database and model directory are created automatically on first request — no migrations needed.
+The database and model directory are created automatically on first request, no migrations needed.
 
 ## Client
 
@@ -95,7 +93,7 @@ with MLClient("http://localhost:8000") as client:
 ```
 
 > [!NOTE]
-> The ONNX model's input tensor **must** be named `"input"`. `register_pytorch_model` handles this automatically, but if you export ONNX manually, make sure to set `input_names=["input"]` during export — otherwise inference will fail silently or error.
+> The ONNX model's input tensor **must** be named `"input"`. `register_pytorch_model` handles this automatically, but if you export ONNX manually, make sure to set `input_names=["input"]` during export, otherwise inference will fail silently or error.
 
 ### Running inference
 
@@ -112,7 +110,7 @@ with MLClient("http://localhost:8000") as client:
     # result is a numpy.ndarray
 ```
 
-The input must include a batch dimension as the first axis. `model.input_shape` does **not** include the batch dimension — prepend it yourself (e.g. with `np.expand_dims` or by shaping as `(1, *model.input_shape)`).
+The input must include a batch dimension as the first axis. `model.input_shape` does **not** include the batch dimension, prepend it yourself (e.g. with `np.expand_dims` or by shaping as `(1, *model.input_shape)`).
 
 `infer` also accepts a `torch.Tensor`, which is converted to numpy internally.
 
@@ -127,4 +125,4 @@ with MLClient("http://localhost:8000") as client:
 ```
 
 > [!NOTE]
-> `pick_model()`, `delete_model()` without an ID, and `infer()` without an ID launch an interactive fuzzy picker in the terminal. These require a TTY — they won't work in notebooks or non-interactive scripts.
+> `pick_model()`, `delete_model()` without an ID, and `infer()` without an ID launch an interactive fuzzy picker in the terminal. These require a TTY. They won't work in notebooks or non-interactive scripts.
