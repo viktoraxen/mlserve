@@ -57,6 +57,30 @@ def _export_onnx(
         return f.read()
 
 
+def inmemory_model_custom_input_name(
+    in_channels: int = 2,
+    out_channels: int = 3,
+    input_name: str = "x",
+) -> io.BytesIO:
+    """Return an ONNX model with a custom input tensor name."""
+    model = mlp(in_channels, out_channels)
+    dummy_input = torch.randn(1, in_channels)
+
+    with tempfile.NamedTemporaryFile(suffix=".onnx") as f:
+        program = torch.onnx.export(
+            model,
+            (dummy_input,),
+            None,
+            input_names=[input_name],
+            output_names=["output"],
+            dynamic_axes={input_name: {0: "batch"}, "output": {0: "batch"}},
+        )
+        assert program is not None
+        program.save(f.name)
+        f.seek(0)
+        return io.BytesIO(f.read())
+
+
 def inmemory_model(
     in_channels: int = 2,
     out_channels: int = 3,

@@ -29,7 +29,8 @@ async def infer_model(model_id: int, input: UploadFile):
     array = await uploadfile_to_ndarray(input)
 
     session = get_onnx_session(model_path)
-    output = session.run(None, {"input": array})
+    input_name = session.get_inputs()[0].name
+    output = session.run(None, {input_name: array})
 
     assert isinstance(output, list), "Expected inference output to be a list."
     assert isinstance(output[0], np.ndarray), "Inference output contains no ndarray."
