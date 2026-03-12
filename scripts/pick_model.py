@@ -13,7 +13,13 @@ def main(
 
     try:
         with mlclient.MLClient(url) as client:
-            pprint(client.pick_model())
+            model = client.pick_model()
+
+            if model is None:
+                print("No models available.")
+                raise typer.Exit(0)
+
+            pprint(model)
     except httpx.HTTPError:
         print(f"Could not connect to server on URL {url}")
         raise typer.Exit(1)
