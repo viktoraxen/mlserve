@@ -4,6 +4,7 @@ from pathlib import Path
 import pytest
 from fastapi.testclient import TestClient
 from mlclient import MLClient
+from mlclient.model import Model
 from mlserver.config import configure
 from mlserver.main import app
 from mlserver.state import reset as reset_state
@@ -35,8 +36,8 @@ def client(tmp_dirs: tuple[Path, Path]) -> Generator[MLClient]:
 
 
 @pytest.fixture()
-def registered_model(client: MLClient) -> int:
-    """Register a tiny model via the client and return its id."""
+def registered_model(client: MLClient) -> Model:
+    """Register a tiny model via the client and return the registered model info."""
     name = "test_model"
     model_path = tempfile_model(3 * 4 * 4, 10, input_shape=(3, 4, 4), name=name)
     return client.register_onnx_model(name, model_path)  # type: ignore

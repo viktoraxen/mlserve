@@ -28,7 +28,7 @@ class MLClient:
         name: str,
         model_path: str | Path,
         description: str | None = None,
-    ) -> int:
+    ) -> Model:
         import json
 
         path = Path(model_path)
@@ -46,7 +46,7 @@ class MLClient:
 
         response.raise_for_status()
 
-        return response.json().get("id")
+        return Model.from_dict(response.json())
 
     def register_pytorch_model(
         self,
@@ -54,7 +54,7 @@ class MLClient:
         model: Any,
         input_shape: tuple[int, ...],
         description: str | None = None,
-    ) -> int:
+    ) -> Model:
         import contextlib
         import io
         import logging
@@ -79,6 +79,7 @@ class MLClient:
         ):
             warnings.simplefilter("ignore")
             logging.disable(logging.CRITICAL)
+
             program = torch.onnx.export(
                 model,
                 (dummy_input,),
@@ -87,6 +88,7 @@ class MLClient:
                 output_names=["output"],
                 dynamic_axes={"input": {0: "batch"}, "output": {0: "batch"}},
             )
+
             logging.disable(logging.NOTSET)
 
             assert program is not None, "Failed to export model!"

@@ -92,8 +92,7 @@ with MLClient("http://localhost:8000") as client:
     )
 ```
 
-> [!NOTE]
-> The ONNX model's input tensor **must** be named `"input"`. `register_pytorch_model` handles this automatically, but if you export ONNX manually, make sure to set `input_names=["input"]` during export, otherwise inference will fail silently or error.
+ONNX models are validated on upload — invalid files are rejected with a `400` error.
 
 ### Running inference
 
