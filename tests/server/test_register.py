@@ -1,3 +1,4 @@
+import io
 import json
 
 from fastapi.testclient import TestClient
@@ -52,3 +53,29 @@ def test_register_model_missing_filename_returns_error(client: TestClient):
     )
 
     assert resp.status_code != 200
+
+
+def test_register_invalid_onnx_returns_400(client: TestClient):
+    invalid_bytes = io.BytesIO(b"this is not a valid onnx model")
+
+    resp = client.post(
+        "/register",
+        data={"data": json.dumps({"name": "invalid_model"})},
+        files={"model": ("invalid_model.onnx", invalid_bytes, "application/octet-stream")},
+    )
+
+    assert resp.status_code == 400
+    assert "Invalid ONNX model" in resp.json()["detail"]
+
+
+def test_register_invalid_onnx_cleans_up_file(client: TestClient, tmp_dirs):
+    models_dir, _ = tmp_dirs
+    invalid_bytes = io.BytesIO(b"not valid onnx")
+
+    client.post(
+        "/register",
+        data={"data": json.dumps({"name": "cleanup_model"})},
+        files={"model": ("cleanup_model.onnx", invalid_bytes, "application/octet-stream")},
+    )
+
+    assert not (models_dir / "cleanup_model.onnx").exists()

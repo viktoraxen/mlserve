@@ -27,7 +27,11 @@ async def register_model(model: UploadFile, data: str = Form()):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Writing model file failed: {e}")
 
-    model_info = get_model_info(model_path)
+    try:
+        model_info = get_model_info(model_path)
+    except Exception as e:
+        model_path.unlink(missing_ok=True)
+        raise HTTPException(status_code=400, detail=f"Invalid ONNX model: {e}")
 
     try:
         with Session(get_sql_engine()) as session:
@@ -43,7 +47,4 @@ async def register_model(model: UploadFile, data: str = Form()):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Writing to database failed: {e}")
 
-    return {
-        "message": f"Model '{metadata['name']}' registered successfully.",
-        "id": registered_model.id,
-    }
+    return registered_model
