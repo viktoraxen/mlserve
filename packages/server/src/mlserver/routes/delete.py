@@ -1,3 +1,5 @@
+from pathlib import Path
+
 from fastapi import APIRouter, HTTPException
 from sqlmodel import Session, delete, select
 
@@ -22,6 +24,8 @@ async def delete_model(model_id: int):
 
             session.exec(delete(RegisteredModel).where(RegisteredModel.id == model_id))  # type: ignore[arg-type]
             session.commit()
+
+            Path(existing.path).unlink(missing_ok=True)
     except HTTPException:
         raise
     except Exception as e:
