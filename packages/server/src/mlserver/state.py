@@ -34,7 +34,7 @@ def get_sql_engine() -> Engine:
     db_path = Path(config.sqlite_url.removeprefix("sqlite:///"))
     db_path.parent.mkdir(parents=True, exist_ok=True)
 
-    _engine = create_engine(config.sqlite_url, echo=True)
+    _engine = create_engine(config.sqlite_url, echo=False)
     SQLModel.metadata.create_all(_engine)
 
     return _engine
