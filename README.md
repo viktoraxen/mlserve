@@ -19,12 +19,10 @@ pip install "git+https://github.com/viktoraxen/mlserve.git#subdirectory=packages
 ### Starting the server
 
 ```bash
+# With defaults (http://0.0.0.0:8000)
 uv run server
-```
 
-This starts the server on `http://0.0.0.0:8000`. The host, port, and protocol can be configured with CLI flags:
-
-```bash
+# Custom adress
 uv run server --host 127.0.0.1 --port 3000 --protocol https
 ```
 
