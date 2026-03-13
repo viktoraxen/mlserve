@@ -12,8 +12,6 @@ router = APIRouter()
 
 @router.post("/delete")
 async def delete_model(model_id: int):
-    logger.info(f"Deleting model with id '{model_id}'.")
-
     try:
         with Session(get_sql_engine()) as session:
             existing = session.exec(
@@ -21,7 +19,7 @@ async def delete_model(model_id: int):
             ).first()
 
             if not existing:
-                logger.warning(f"Model with id '{model_id}' does not exist!")
+                logger.warning(f"Could not delete model with id '{model_id}'. Id does not exist!")
 
                 raise HTTPException(
                     status_code=404,
@@ -33,7 +31,7 @@ async def delete_model(model_id: int):
     except HTTPException:  # Catch 404 raised above
         raise
     except Exception as e:
-        logger.error(f"Failed to remove model with id '{model_id}' from database!")
+        logger.error(f"Failed to remove model with id '{model_id}' from database: {e}")
 
         raise HTTPException(
             status_code=500,
@@ -43,11 +41,13 @@ async def delete_model(model_id: int):
     try:
         Path(existing.path).unlink(missing_ok=True)
     except Exception as e:
-        logger.error(f"Failed to delete model file for model with id '{model_id}'!")
+        logger.error(f"Failed to delete model file for model with id '{model_id}': {e}")
 
         raise HTTPException(
             status_code=500,
             detail=f"Failed to delete model file for model with id '{model_id}': {e}",
         )
+
+    logger.info(f"Deleting model with id '{model_id}'.")
 
     return existing

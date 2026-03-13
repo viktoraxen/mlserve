@@ -19,8 +19,6 @@ async def register_model(model: UploadFile, data: str = Form()):
 
     # TODO: Validate input data
 
-    logger.info(f"Registering model '{model_name}'.")
-
     if model.filename is None:
         logger.error(f"Model '{model_name}' did not provide filename.")
 
@@ -34,14 +32,14 @@ async def register_model(model: UploadFile, data: str = Form()):
         with open(model_path, "wb") as f:
             f.write(model.file.read())
     except Exception as e:
-        logger.error(f"Model '{model_name}' could not be written to path '{model_path}'!")
+        logger.error(f"Model '{model_name}' could not be written to path '{model_path}': {e}")
 
         raise HTTPException(status_code=500, detail=f"Writing model file failed: {e}")
 
     try:
         model_info = get_model_info(model_path)
     except Exception as e:
-        logger.error(f"Model '{model_name}' provided invalid ONNX model!")
+        logger.error(f"Model '{model_name}' provided invalid ONNX model: {e}")
 
         model_path.unlink(missing_ok=True)
         raise HTTPException(status_code=400, detail=f"Invalid ONNX model: {e}")
@@ -58,9 +56,11 @@ async def register_model(model: UploadFile, data: str = Form()):
             session.commit()
             session.refresh(registered_model)
     except Exception as e:
-        logger.error(f"Model '{model_name}' could not be written to database!")
+        logger.error(f"Model '{model_name}' could not be written to database: {e}")
 
         model_path.unlink(missing_ok=True)
         raise HTTPException(status_code=500, detail=f"Writing to database failed: {e}")
+
+    logger.info(f"Registered model '{model_name}' to id '{registered_model.id}'.")
 
     return registered_model

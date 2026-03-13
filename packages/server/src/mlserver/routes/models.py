@@ -10,8 +10,6 @@ router = APIRouter()
 
 @router.get("/models")
 async def get_models() -> list[RegisteredModel]:
-    logger.info("Fetching models.")
-
     try:
         with Session(get_sql_engine()) as session:
             models = session.exec(select(RegisteredModel)).all()
@@ -19,5 +17,7 @@ async def get_models() -> list[RegisteredModel]:
         logger.error(f"Failed to fetch models: {e}")
 
         raise HTTPException(status_code=500, detail=f"Failed to fetch models: {e}")
+
+    logger.info(f"Fetched models ({len(models)}).")
 
     return list(models)

@@ -13,13 +13,6 @@ router = APIRouter()
 @router.post("/infer")
 async def infer_model(model_id: int, input: UploadFile):
     # TODO: Validate input data
-
-    array = await uploadfile_to_ndarray(input)
-
-    logger.info(
-        f"Inferring using model with id '{model_id}', and input with shape '{array.shape}'."
-    )
-
     try:
         with Session(get_sql_engine()) as session:
             result = session.exec(
@@ -40,6 +33,8 @@ async def infer_model(model_id: int, input: UploadFile):
     model_path = result.path
 
     try:
+        array = await uploadfile_to_ndarray(input)
+
         session = get_onnx_session(model_path)
         input_name = session.get_inputs()[0].name
         output = session.run(None, {input_name: array})
@@ -56,7 +51,11 @@ async def infer_model(model_id: int, input: UploadFile):
 
         raise HTTPException(
             status_code=500,
-            detail=f"Unexpected inference output for model with id '{model_id}'.",
+            detail=f"Unexpected inference output type for model '{model_id}': {type(output)}",
         )
+
+    logger.info(
+        f"Inferred using model with id '{model_id}'. '{array.shape}' -> '{output[0].shape}'."
+    )
 
     return output[0].tolist()
