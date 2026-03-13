@@ -12,7 +12,26 @@ from mlclient.picker import pick
 
 class MLClient:
     def __init__(self, base_url: str = "http://localhost:8000"):
-        self._client = httpx.Client(base_url=base_url)
+        self._client = httpx.Client(
+            base_url=base_url,
+            event_hooks={"response": [MLClient._raise_on_error]},
+        )
+
+    @staticmethod
+    def _raise_on_error(response: httpx.Response) -> None:
+        if response.is_success:
+            return
+
+        response.read()
+        detail = response.text
+        try:
+            detail = response.json().get("detail", detail)
+        except Exception:
+            pass
+
+        raise httpx.HTTPStatusError(
+            detail, request=response.request, response=response
+        )
 
     def __enter__(self) -> MLClient:
         return self
@@ -43,8 +62,6 @@ class MLClient:
                 data={"data": json.dumps(metadata)},
                 files={"model": (path.name, f, "application/octet-stream")},
             )
-
-        response.raise_for_status()
 
         return Model.from_dict(response.json())
 
@@ -102,7 +119,6 @@ class MLClient:
             params={"model_id": model_id},
         )
 
-        response.raise_for_status()
         return Model.from_dict(response.json())
 
     def infer(
@@ -134,7 +150,6 @@ class MLClient:
             files={"input": ("input", buf)},
         )
 
-        resp.raise_for_status()
         result = resp.json()
 
         assert isinstance(result, list), "Expected inference result to be list."
@@ -144,7 +159,6 @@ class MLClient:
     def models(self) -> list[Model]:
         response = self._client.get("/models")
 
-        response.raise_for_status()
         response = response.json()
 
         assert isinstance(response, list), "Expected models response to be list!"
