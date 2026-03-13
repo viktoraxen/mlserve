@@ -1,6 +1,54 @@
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
+from rich.align import Align
+from rich.console import Console
+from rich.panel import Panel
+from rich.table import Table
+from rich.text import Text
+from sqlmodel import Session, select
 
+import mlserver.config as config
+from mlserver.models.registered_model import RegisteredModel
 from mlserver.routes import router
+from mlserver.state import get_sql_engine
 
-app = FastAPI()
+
+@asynccontextmanager
+async def lifespan(_: FastAPI):
+    console = Console()
+
+    with Session(get_sql_engine()) as session:
+        model_count = len(session.exec(select(RegisteredModel)).all())
+
+    base_url = f"{config.protocol}://{config.host}:{config.port}"
+
+    table = Table(show_header=False, show_edge=False, box=None, padding=(0, 1))
+    table.add_row("Serving at:", str(base_url))
+    table.add_row("API Docs:", f"{base_url}/docs")
+    table.add_row("Registered models:", str(model_count))
+
+    console.print(
+        Panel(
+            Align.center(table),
+            title="MLServer",
+            width=80,
+            border_style="green",
+        )
+    )
+
+    yield
+
+    console.print()
+    console.print(
+        Panel(
+            Text("Server stopped.", justify="center"),
+            title="MLServer",
+            width=80,
+            border_style="red",
+        )
+    )
+
+
+app = FastAPI(lifespan=lifespan)
 app.include_router(router)

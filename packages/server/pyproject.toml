@@ -19,7 +19,7 @@ dependencies = [
 ]
 
 [project.scripts]
-server = "mlserver.cli:main"
+server = "mlserver.cli:app"
 
 [tool.setuptools.packages.find]
 where = ["src"]
