@@ -23,7 +23,11 @@ def main(
             input = np.random.rand(*model.input_shape)
             input = np.expand_dims(input, axis=0)
 
-            result = client.infer(input, model.id)
+            try:
+                result = client.infer(input, model.id)
+            except Exception as e:
+                print(f"Failed to infer using model with id '{model.id}': {e}")
+                raise typer.Exit(1)
 
             pprint(result.shape)
             pprint(result)
