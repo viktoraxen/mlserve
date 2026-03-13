@@ -40,4 +40,4 @@ def registered_model(client: MLClient) -> Model:
     """Register a tiny model via the client and return the registered model info."""
     name = "test_model"
     model_path = tempfile_model(3 * 4 * 4, 10, input_shape=(3, 4, 4), name=name)
-    return client.register_onnx_model(name, model_path)  # type: ignore
+    return client.register_onnx_model(name, model_path)

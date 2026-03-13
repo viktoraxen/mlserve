@@ -17,7 +17,9 @@ async def register_model(model: UploadFile, data: str = Form()):
     metadata = json.loads(data)
     model_name = metadata.get("name")
 
-    logger.info(f"Registering model '{model_name}'")
+    # TODO: Validate input data
+
+    logger.info(f"Registering model '{model_name}'.")
 
     if model.filename is None:
         logger.error(f"Model '{model_name}' did not provide filename.")
