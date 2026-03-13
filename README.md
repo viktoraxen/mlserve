@@ -6,15 +6,11 @@ The project is divided into a `mlserver` and a `mlclient` package. Both are need
 
 ## Installation
 
-### UV
-
 ```bash
+# UV
 uv add "git+https://github.com/viktoraxen/mlserve.git#subdirectory=packages/{client|server}"
-```
 
-### Pip
-
-```bash
+# Pip
 pip install "git+https://github.com/viktoraxen/mlserve.git#subdirectory=packages/{client|server}"
 ```
 
