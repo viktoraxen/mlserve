@@ -13,7 +13,12 @@ def main(
 
     try:
         with mlclient.MLClient(url) as client:
-            models = client.models()
+            try:
+                models = client.models()
+            except Exception as e:
+                print(f"Failed to list models: {e}")
+                raise typer.Exit(1)
+
             pprint(models)
 
     except httpx.HTTPError:

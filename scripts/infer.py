@@ -14,7 +14,11 @@ def main(
 
     try:
         with mlclient.MLClient(url) as client:
-            model = client.pick_model()
+            try:
+                model = client.pick_model()
+            except Exception as e:
+                print(f"Could not pick model: {e}")
+                raise typer.Exit(1)
 
             if model is None:
                 print("No models available.")
