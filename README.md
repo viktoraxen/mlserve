@@ -26,7 +26,13 @@ pip install "git+https://github.com/viktoraxen/mlserve.git#subdirectory=packages
 uv run server
 ```
 
-This starts the server on `0.0.0.0:8000`. The server stores ONNX model files and a SQLite database on disk.
+This starts the server on `http://0.0.0.0:8000`. The host, port, and protocol can be configured with CLI flags:
+
+```bash
+uv run server --host 127.0.0.1 --port 3000 --protocol https
+```
+
+The server stores ONNX model files and a SQLite database on disk.
 
 ### Configuration
 
