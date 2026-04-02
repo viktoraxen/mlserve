@@ -4,8 +4,8 @@ from fastapi import FastAPI
 from rich.align import Align
 from rich.console import Console
 from rich.panel import Panel
+from rich.rule import Rule
 from rich.table import Table
-from rich.text import Text
 from sqlmodel import Session, select
 
 import mlserver.config as config
@@ -37,6 +37,7 @@ async def lifespan(application: FastAPI):
     table = Table(show_header=False, show_edge=False, box=None, padding=(0, 1))
     table.add_row("Serving at:", base_url)
     table.add_row("API docs:", f"{base_url}/docs")
+    table.add_row("Database:", config.sqlite_url.removeprefix("sqlite:///"))
     table.add_row("Registered models:", str(model_count))
     table.add_row()
 
@@ -56,15 +57,9 @@ async def lifespan(application: FastAPI):
     yield
 
     console.print()
-    console.print(
-        Panel(
-            Text("Server stopped.", justify="center"),
-            title="MLServer",
-            width=100,
-            expand=True,
-            border_style="red",
-        )
-    )
+    rule = Rule("Server stopped", style="red")
+    rule.end = "\n"
+    console.print(rule, width=100)
 
 
 app = FastAPI(lifespan=lifespan)
