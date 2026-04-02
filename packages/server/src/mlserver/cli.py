@@ -1,3 +1,6 @@
+import os
+from pathlib import Path
+
 import typer
 import uvicorn
 
@@ -11,8 +14,14 @@ def main(
     host: str = "0.0.0.0",
     port: int = 8000,
     protocol: str = "http",
+    db_path: Path = Path(os.environ.get("MLSERVE_DB_PATH", str(Path.home() / ".mlserve" / "database.db"))),
 ):
-    config.configure(server_host=host, server_port=port, server_protocol=protocol)
+    config.configure(
+        server_host=host,
+        server_port=port,
+        server_protocol=protocol,
+        db_path=db_path,
+    )
 
     uvicorn.run(
         "mlserver.main:app",
