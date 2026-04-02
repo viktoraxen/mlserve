@@ -123,5 +123,11 @@ with MLClient("http://localhost:8000") as client:
     client.delete_model(model_id=1)
 ```
 
-> [!NOTE]
-> `pick_model()`, `delete_model()` without an ID, and `infer()` without an ID launch an interactive fuzzy picker in the terminal. These require a TTY. They won't work in notebooks or non-interactive scripts.
+### Interactively selecting a model
+
+```python
+with MLClient("http://localhost:8000") as client:
+    model = client.pick_model()
+```
+
+This will launch an interactive picker in the terminal.
