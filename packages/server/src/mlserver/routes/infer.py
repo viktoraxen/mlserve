@@ -84,8 +84,6 @@ async def infer_model(model_id: int, input: UploadFile):
             detail=f"Unexpected inference output type using model '{model_id}': {type(output)}",
         )
 
-    logger.info(
-        f"Inferred using model with id '{model_id}'. '{array.shape}' -> '{output[0].shape}'."
-    )
+    logger.info(f"Inferred using model with id '{model_id}'. {array.shape} -> {output[0].shape}.")
 
     return output[0].tolist()

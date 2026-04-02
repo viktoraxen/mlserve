@@ -29,9 +29,7 @@ class MLClient:
         except Exception:
             pass
 
-        raise httpx.HTTPStatusError(
-            detail, request=response.request, response=response
-        )
+        raise httpx.HTTPStatusError(detail, request=response.request, response=response)
 
     def __enter__(self) -> MLClient:
         return self

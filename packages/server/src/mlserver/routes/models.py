@@ -18,6 +18,6 @@ async def get_models() -> list[RegisteredModel]:
 
         raise HTTPException(status_code=500, detail=f"Failed to fetch models: {e}")
 
-    logger.info(f"Fetched models ({len(models)}).")
+    logger.info(f"Fetched models. ({len(models)})")
 
     return list(models)
